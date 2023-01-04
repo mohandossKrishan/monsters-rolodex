@@ -1,10 +1,55 @@
-import { Component } from 'react';
+import { useState,useEffect } from 'react';
 import CardList from './components/card-list/card-list.components';
 import SearchBox from './search-box/search-box.components';
 import './App.css';
 
+const App = ()=> {
+  const [searchField, setSearchField] = useState('');
+  //console.log({searchField}); //returns as object
+  //console.log(searchField); //returns as string
+  const [monsters, setMonsters] = useState([]);
+  const [filteredMonsters, setFilterMonsters] = useState(monsters);
+  //const [stringField, setStringField] = useState('');
 
-class App extends Component {
+  useEffect(() => {
+    fetch('https://jsonplaceholder.typicode.com/users')
+    .then((response) => response.json())
+    .then((users) => setMonsters(users));
+  },[]);
+
+  useEffect(() => {
+    const newFilteredMonsters = monsters.filter((monster) => {
+      return monster.name.toLocaleLowerCase().includes(searchField);
+    });
+    setFilterMonsters(newFilteredMonsters);
+    
+    },[monsters,searchField]);
+  /* const onStringChange = (event) => {
+    setStringField(event.target.value);
+  } */
+  const onSearchChange = (event) => {
+    const searchFieldString = event.target.value.toLocaleLowerCase();
+    setSearchField(searchFieldString);
+  };
+
+
+  
+  //console.log(filterMonsters);
+
+  return(
+    <div className="App">
+      <h1 className="app-title">Monster Rolodex</h1>
+      <SearchBox 
+        className = 'monsters-search-box'
+        onChangeHandler= {onSearchChange}  
+        placeholder = 'search monsters' 
+      />      
+      <CardList monsters={filteredMonsters}/>  
+    </div> 
+  );
+}
+
+/* class App extends Component {
   
   constructor() {
     super();
@@ -49,18 +94,11 @@ class App extends Component {
         onChangeHandler= {onSearchChange}  
         placeholder = 'search monsters' 
         className = 'search-box'
+        
         />      
       <CardList monsters={filterMonsters}/>
-
-{/*       {      {filterMonsters.map((monster) => {
-          return (
-            <div key= {monster.id}>
-              <h1>{monster.name}</h1>
-            </div>
-          );
-        })} } */}
     </div> 
   );
   }
-}
+} */
 export default App;
